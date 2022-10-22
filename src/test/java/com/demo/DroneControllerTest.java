@@ -72,30 +72,6 @@ public class DroneControllerTest extends DronesApiApplicationTests {
     }
 
     @Test
-    void when_load_drone_with_valid_medication_should_save_medication_and_return_201_created() throws Exception {
-        var drone = new Drone();
-        drone.setSerialNumber("Serial-number");
-        drone.setWeight(300);
-        drone.setBatteryCapacity(100);
-        drone.setModel(DroneModel.LIGHT_WEIGHT);
-        drone.setState(DroneState.IDLE);
-        droneRepository.save(drone);
-
-        var medication = new MedicationDto();
-        medication.setWeight(100);
-        medication.setCode("CODE_1");
-        medication.setName("Dummy_medication-Name");
-
-        this.mockMvc.perform(post("/api/drones/" + drone.getId() + "/medications")
-                        .content(objectMapper.writeValueAsString(List.of(medication)))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id", CoreMatchers.notNullValue()))
-                .andExpect(status().isCreated())
-                .andDo(print());
-    }
-
-    @Test
     void when_load_drone_with_medication_have_invalid_name_should_return_400_bad_request() throws Exception {
         var medication = new MedicationDto();
         medication.setWeight(100);
