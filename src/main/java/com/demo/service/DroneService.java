@@ -1,5 +1,6 @@
 package com.demo.service;
 
+import com.demo.domain.DroneState;
 import com.demo.web.data.DroneDto;
 import com.demo.web.data.MedicationDto;
 
@@ -14,4 +15,6 @@ public interface DroneService {
     DroneDto loadDroneMedication(UUID droneId, List<MedicationDto> medicationDtos);
 
     List<MedicationDto> getDroneMedications(UUID droneId);
+
+    List<DroneDto> filterDrones(List<DroneState> droneStates);
 }

@@ -1,5 +1,6 @@
 package com.demo.web.controller;
 
+import com.demo.domain.DroneState;
 import com.demo.service.DroneService;
 import com.demo.web.Exception.ApiEntityNotFoundException;
 import com.demo.web.data.DroneDto;
@@ -48,5 +49,11 @@ public class DroneController {
         } else {
             throw new ApiEntityNotFoundException(String.format("No drone with id %s found", droneId));
         }
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<DroneDto> getDroneMedications(@RequestParam List<DroneState> droneStates) {
+        return droneService.filterDrones(droneStates);
     }
 }
