@@ -141,4 +141,19 @@ public class DroneControllerTest extends DronesApiApplicationTests {
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
+
+    @Test
+    void when_load_drone_with_medication_with_invalid_drone_uuid_should_return_404_not_found() throws Exception {
+        var medication = new MedicationDto();
+        medication.setWeight(100);
+        medication.setCode("CODE_1");
+        medication.setName("Dummy_medication-Name");
+
+        this.mockMvc.perform(post("/api/drones/" + UUID.randomUUID() + "/medications")
+                        .content(objectMapper.writeValueAsString(List.of(medication)))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
 }
