@@ -13,4 +13,5 @@ public interface DroneService {
 
     DroneDto loadDroneMedication(UUID droneId, List<MedicationDto> medicationDtos);
 
+    List<MedicationDto> getDroneMedications(UUID droneId);
 }

@@ -1,6 +1,5 @@
 package com.demo.service;
 
-import com.demo.domain.Drone;
 import com.demo.domain.Medication;
 import com.demo.repository.DroneRepository;
 import com.demo.web.Exception.ApiBadRequestException;
@@ -51,6 +50,14 @@ public class DroneServiceImpl implements DroneService {
         drone.get().getMedications().addAll(medications);
         droneRepository.save(drone.get());
         return DroneMapper.mapToDroneDto(drone.get());
+    }
+
+    @Override
+    public List<MedicationDto> getDroneMedications(UUID droneId) {
+        var drone = droneRepository.findById(droneId);
+        return drone.get().getMedications().stream()
+                .map(DroneMapper::mapToMedicationDto)
+                .collect(Collectors.toList());
     }
 
     private int getMedicationWeightSum(Set<Medication> medications) {

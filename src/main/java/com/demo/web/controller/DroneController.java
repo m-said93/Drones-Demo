@@ -40,4 +40,13 @@ public class DroneController {
         }
     }
 
+    @GetMapping("/{droneId}/medications")
+    @ResponseStatus(HttpStatus.OK)
+    public List<MedicationDto> getDroneMedications(@PathVariable UUID droneId) {
+        if (droneService.droneExists(droneId)) {
+            return droneService.getDroneMedications(droneId);
+        } else {
+            throw new ApiEntityNotFoundException(String.format("No drone with id %s found", droneId));
+        }
+    }
 }
