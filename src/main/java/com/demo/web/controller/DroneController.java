@@ -19,7 +19,7 @@ public class DroneController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DroneDto createGateway(@Valid @RequestBody DroneDto droneDto) {
-        return droneDto;
+    public DroneDto createDrone(@Valid @RequestBody DroneDto droneDto) {
+        return droneService.createDrone(droneDto);
     }
 }
