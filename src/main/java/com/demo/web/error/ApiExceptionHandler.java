@@ -1,5 +1,7 @@
 package com.demo.web.error;
 
+import com.demo.web.Exception.ApiBadRequestException;
+import com.demo.web.Exception.ApiEntityNotFoundException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -115,6 +117,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         ex.getSupportedMediaTypes().forEach(t -> builder.append(t + " "));
 
         final ApiError apiError = new ApiError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getLocalizedMessage(), builder.substring(0, builder.length() - 2));
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    @ExceptionHandler({ApiEntityNotFoundException.class})
+    public ResponseEntity<Object> handleApiEntityNotFoundException(final ApiEntityNotFoundException ex, final WebRequest request) {
+        final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getMessage(), "Entity not found");
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    @ExceptionHandler({ApiBadRequestException.class})
+    public ResponseEntity<Object> handleApiBadRequestException(final ApiBadRequestException ex, final WebRequest request) {
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), "Bad request");
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 

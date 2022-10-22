@@ -1,11 +1,13 @@
 package com.demo.web.controller;
 
 import com.demo.service.DroneService;
+import com.demo.web.Exception.ApiEntityNotFoundException;
 import com.demo.web.data.DroneDto;
 import com.demo.web.data.MedicationDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -29,8 +31,13 @@ public class DroneController {
 
     @PostMapping("/{droneId}/medications")
     @ResponseStatus(HttpStatus.CREATED)
-    public List<MedicationDto> loadDroneMedication(@RequestBody @Valid List<MedicationDto> medicationDtos,
-                                                   @PathVariable UUID droneId) {
-        return medicationDtos;
+    public DroneDto loadDroneMedication(@RequestBody @Valid List<MedicationDto> medicationDtos,
+                                        @PathVariable UUID droneId) {
+        if (droneService.droneExists(droneId)) {
+            return droneService.loadDroneMedication(droneId, medicationDtos);
+        } else {
+            throw new ApiEntityNotFoundException(String.format("No drone with id %s found", droneId));
+        }
     }
+
 }
