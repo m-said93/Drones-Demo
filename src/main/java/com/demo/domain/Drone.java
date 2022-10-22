@@ -36,11 +36,11 @@ public class Drone {
     @Max(100)
     private int batteryCapacity;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private DroneModel model;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private DroneState state;
 

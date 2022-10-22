@@ -1,11 +1,16 @@
 package com.demo;
 
+import com.demo.domain.Drone;
 import com.demo.domain.DroneModel;
 import com.demo.domain.DroneState;
 import com.demo.web.data.DroneDto;
+import com.demo.web.data.MedicationDto;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+
+import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -62,6 +67,77 @@ public class DroneControllerTest extends DronesApiApplicationTests {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message", CoreMatchers.equalTo("weight: must be less than or equal to 500")))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    void when_load_drone_with_valid_medication_should_save_medication_and_return_201_created() throws Exception {
+        var drone = new Drone();
+        drone.setSerialNumber("Serial-number");
+        drone.setWeight(300);
+        drone.setBatteryCapacity(100);
+        drone.setModel(DroneModel.LIGHT_WEIGHT);
+        drone.setState(DroneState.IDLE);
+        droneRepository.save(drone);
+
+        var medication = new MedicationDto();
+        medication.setWeight(100);
+        medication.setCode("CODE_1");
+        medication.setName("Dummy_medication-Name");
+
+        this.mockMvc.perform(post("/api/drones/" + drone.getId() + "/medications")
+                        .content(objectMapper.writeValueAsString(List.of(medication)))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id", CoreMatchers.notNullValue()))
+                .andExpect(status().isCreated())
+                .andDo(print());
+    }
+
+    @Test
+    void when_load_drone_with_medication_have_invalid_name_should_return_400_bad_request() throws Exception {
+        var medication = new MedicationDto();
+        medication.setWeight(100);
+        medication.setCode("CODE_1");
+        medication.setName("medication-Name$");
+
+        this.mockMvc.perform(post("/api/drones/" + UUID.randomUUID() + "/medications")
+                        .content(objectMapper.writeValueAsString(List.of(medication)))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", CoreMatchers.equalTo("loadDroneMedication.medicationDtos[0].name: must match \"[A-Za-z0-9_-]+\"")))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    void when_load_drone_with_medication_have_invalid_weight_should_return_400_bad_request() throws Exception {
+        var medication = new MedicationDto();
+        medication.setCode("CODE_1");
+        medication.setName("Dummy_medication-Name");
+
+        this.mockMvc.perform(post("/api/drones/" + UUID.randomUUID() + "/medications")
+                        .content(objectMapper.writeValueAsString(List.of(medication)))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", CoreMatchers.equalTo("loadDroneMedication.medicationDtos[0].weight: must not be null")))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    void when_load_drone_with_medication_have_invalid_code_should_return_400_bad_request() throws Exception {
+        var medication = new MedicationDto();
+        medication.setWeight(100);
+        medication.setCode("CODE-1");
+        medication.setName("Dummy_medication-Name");
+
+        this.mockMvc.perform(post("/api/drones/" + UUID.randomUUID() + "/medications")
+                        .content(objectMapper.writeValueAsString(List.of(medication)))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", CoreMatchers.equalTo("loadDroneMedication.medicationDtos[0].code: must match \"[A-Z0-9_]+\"")))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
