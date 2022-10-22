@@ -68,6 +68,11 @@ public class DroneServiceImpl implements DroneService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public DroneDto getDroneById(UUID droneId) {
+        return DroneMapper.mapToDroneDto(droneRepository.findById(droneId).get());
+    }
+
     private int getMedicationWeightSum(Set<Medication> medications) {
         return medications.stream()
                 .map(Medication::getWeight)
